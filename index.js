@@ -37,6 +37,12 @@ async function run() {
       const result = await courseCollection.findOne(filter);
       res.send(result);
     });
+    app.get("/search-course/:name", async (req, res) => {
+      const name = req.params.name;
+      const query = { name: { $regex: new RegExp(name, "i") } }; // Case-insensitive search
+      const result = await courseCollection.find(query).toArray();
+      res.send(result);
+    });
 
     app.post('/enrolledStudent', async(req,res )=> {
       const body = req.body;
@@ -47,7 +53,7 @@ async function run() {
     app.get('/students', async(req,res)=> {
       const result = await enrolledStudentCollection.find().toArray();
       res.send(result);
-    })
+    });
 
 
     await client.db("admin").command({ ping: 1 });
