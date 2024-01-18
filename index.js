@@ -9,7 +9,7 @@ app.use(express.json());
 // courseDashBoard
 // WqM_6.Th6Tkpycs
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId} = require('mongodb');
 const port = process.env.PORT || 5000;
 const uri = "mongodb+srv://courseDashBoard:WqM_6.Th6Tkpycs@cluster0.hmijryu.mongodb.net/?retryWrites=true&w=majority";
 
@@ -23,13 +23,30 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-   
     // await client.connect();
     const courseCollection = client.db("alemeno-course-dashboard").collection("courses");
+    const enrolledStudentCollection = client.db("alemeno-course-dashboard").collection("students");
     
     app.get('/courses', async(req, res)=> {
         const result = await courseCollection.find().toArray();
         res.send(result);
+    });
+    app.get('/courses/:id', async(req, res)=>{
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await courseCollection.findOne(filter);
+      res.send(result);
+    });
+
+    app.post('/enrolledStudent', async(req,res )=> {
+      const body = req.body;
+      const result = await enrolledStudentCollection.insertOne(body);
+      res.send(result);
+    });
+
+    app.get('/students', async(req,res)=> {
+      const result = await enrolledStudentCollection.find().toArray();
+      res.send(result);
     })
 
 
